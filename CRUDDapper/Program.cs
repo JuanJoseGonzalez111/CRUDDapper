@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System.Configuration;
+using Region = CRUDDapper.Datos.Region;
 
 namespace CRUDDapper
 {
@@ -23,9 +24,30 @@ namespace CRUDDapper
                       .Build();
             var servicecolletion = new ServiceCollection();
             servicecolletion.AddScoped<ICategoriesDatos, CategoriesDatos>();
+            servicecolletion.AddScoped<ISuplidoresData, SuplidoresData>();
+           servicecolletion.AddScoped<IProductdata,Productdata>();
+            servicecolletion.AddScoped<IOrdenData, OrdenData>();
+            servicecolletion.AddScoped<IClientesData, ClientesData>();
+            servicecolletion.AddScoped<IEmpleadoData, EmpleadoData>();
+            servicecolletion.AddScoped<IRegion, Region>();
+            servicecolletion.AddScoped<ITerritorio, Territorio>();
+            servicecolletion.AddScoped<IShipperData , ShipperData>();
+
+
             servicecolletion.AddScoped<ISqlConnectionFactory, SqlConnectionFactory>();
             servicecolletion.AddScoped<CategoryForm>();
+            servicecolletion.AddScoped<ProductosForn>();
+            servicecolletion.AddScoped<Orders>();
+            servicecolletion.AddScoped<Suplierform>();
             servicecolletion.AddScoped<Form1>();
+            servicecolletion.AddScoped<ClientesForm>();
+            servicecolletion.AddScoped<EmpleadoForm>();
+            servicecolletion.AddScoped<RegionForms>();
+            servicecolletion.AddScoped<txtRegionEnvio>();
+            servicecolletion.AddScoped<RedionTerriUpdate>();
+            servicecolletion.AddScoped<ShipperForms>();
+
+            servicecolletion.AddScoped<TerritorioForms>();
             servicecolletion.AddScoped<IConfiguration>((s) => configuration);
             var serviceprovaider = servicecolletion.BuildServiceProvider();
             Log.Logger = new LoggerConfiguration()

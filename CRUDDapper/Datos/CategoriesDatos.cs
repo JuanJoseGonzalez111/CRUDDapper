@@ -13,12 +13,7 @@ namespace CRUDDapper.Datos
 {
      class CategoriesDatos : ICategoriesDatos
     {
-        /* private readonly IConfiguration _configuration;
-         public CategoriesDatos(IConfiguration configuration) 
-         { 
-             this._configuration = configuration;
-         }
-        */
+       
         private readonly ISqlConnectionFactory _sqlconnectionFactory;
         public CategoriesDatos(ISqlConnectionFactory sqlConnectionFactory)
         {
@@ -26,10 +21,8 @@ namespace CRUDDapper.Datos
         }
         public DataTable LoadCategories()
         {
-            // var connectionString = Program.Configuration.GetConnectionString("NorthwindConnectionString");
-           // var connectionString = _configuration.GetConnectionString("NorthwindConnectionString");
-
-            //using (var connection = new SqlConnection(connectionString))
+            
+           
             using (var connection = _sqlconnectionFactory.GetDbConnection())
             {
                 
@@ -45,8 +38,7 @@ namespace CRUDDapper.Datos
         }
         public void InsertCategory(string categoryName, string description, byte[] picture)
         {
-          //  var connectionString = Program.Configuration.GetConnectionString("NorthwindConnectionString");
-          //  var connectionString = _configuration.GetConnectionString("NorthwindConnectionString");
+         
 
             using (var connection = _sqlconnectionFactory.GetDbConnection())
             {
@@ -56,22 +48,47 @@ namespace CRUDDapper.Datos
                 connection.Execute(query, new { CategoryName = categoryName, Description = description, Picture = picture });
             }
         }
+       
         public void UpdateCategory(int categoryId, string categoryName, string description, byte[] picture)
         {
-            //var connectionString = Program.Configuration.GetConnectionString("NorthwindConnectionString");
-            //var connectionString = _configuration.GetConnectionString("NorthwindConnectionString");
             using (var connection = _sqlconnectionFactory.GetDbConnection())
             {
                 connection.Open();
 
-                var query = "UPDATE Categories SET CategoryName = @CategoryName, Description = @Description, Picture = @Picture WHERE CategoryID = @CategoryID";
+                
+                var query = "UPDATE Categories SET ";
+
+                
+                var columnAssignments = new List<string>();
+
+                
+                if (!string.IsNullOrEmpty(categoryName))
+                {
+                    columnAssignments.Add("CategoryName = @CategoryName");
+                }
+                if (!string.IsNullOrEmpty(description))
+                {
+                    columnAssignments.Add("Description = @Description");
+                }
+                if (picture != null)
+                {
+                    columnAssignments.Add("Picture = @Picture");
+                }
+
+               
+                query += string.Join(", ", columnAssignments);
+
+                
+                query += " WHERE CategoryID = @CategoryID";
+
+                
                 connection.Execute(query, new { CategoryID = categoryId, CategoryName = categoryName, Description = description, Picture = picture });
             }
         }
+
         public void DeleteCategory(int categoryId)
         {
-          //  var connectionString = Program.Configuration.GetConnectionString("NorthwindConnectionString");
-         //  var connectionString = _configuration.GetConnectionString("NorthwindConnectionString");
+        
 
             using (var connection = _sqlconnectionFactory.GetDbConnection())
             {
@@ -81,7 +98,6 @@ namespace CRUDDapper.Datos
                 connection.Execute(query, new { CategoryID = categoryId });
             }
         }
-
 
 
 

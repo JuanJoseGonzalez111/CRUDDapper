@@ -24,15 +24,16 @@ namespace CRUDDapper
         public CategoryForm(ICategoriesDatos categoriesDatos)
         {
             InitializeComponent();
+
             this.categoriesDatos = categoriesDatos;
+            dataGridView2.Hide();
         }
 
 
         private void button1_Click(object sender, EventArgs e)
         {
+            dataGridView2.Show();
 
-            //var categoriesData = new CategoriesDatos();
-            //categoriesDataTable = categoriesData.LoadCategories();
             var categoriesDataTable = categoriesDatos.LoadCategories();
 
 
@@ -49,51 +50,51 @@ namespace CRUDDapper
 
         private void BTeliminar_Click(object sender, EventArgs e)
         {
-            // var categoriesData = new CategoriesDatos();
 
 
-            int selectedRowIndex = dataGridView2.SelectedCells[0].RowIndex;
-            int categoryId = Convert.ToInt32(dataGridView2.Rows[selectedRowIndex].Cells["CategoryID"].Value);
+            if (dataGridView2.SelectedCells.Count > 0)
+            {
+                int selectedRowIndex = dataGridView2.SelectedCells[0].RowIndex;
 
-
-            //categoriesData.DeleteCategory(categoryId);
-            categoriesDatos.DeleteCategory(categoryId);
-            var categoriesDataTable = categoriesDatos.LoadCategories();
-
-
-            dataGridView2.DataSource = categoriesDataTable;
-            dataGridView2.Columns["CategoryID"].HeaderText = "ID de Categoría";
-            dataGridView2.Columns["CategoryName"].HeaderText = "Nombre de Categoría";
-            dataGridView2.Columns["Description"].HeaderText = "Descripción";
-            dataGridView2.Columns["Picture"].HeaderText = "Imagen";
-
-
-        }
-
-        private void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            // textBox1.Text = dataGridView2.SelectedCells[0].RowIndex.ToString();
+                if (selectedRowIndex >= 0)
+                {
+                    int categoryId = Convert.ToInt32(dataGridView2.Rows[selectedRowIndex].Cells["CategoryID"].Value);
+                    categoriesDatos.DeleteCategory(categoryId);
+                    dataGridView2.DataSource = categoriesDatos.LoadCategories();
+                    MessageBox.Show("Categoria eliminada correctamente " + "Eliminado ");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Por favor, seleccione una categoría antes de intentar eliminar.", "Selección requerida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
 
         }
+
 
         private void BTactualizar_Click(object sender, EventArgs e)
         {
-            // var categoriesData = new CategoriesDatos();
 
-            int selectedRowIndex = dataGridView2.SelectedCells[0].RowIndex;
-            int categoryId = Convert.ToInt32(dataGridView2.Rows[selectedRowIndex].Cells["CategoryID"].Value);
+            if (dataGridView2.SelectedCells.Count > 0)
+            {
+                int selectedRowIndex = dataGridView2.SelectedCells[0].RowIndex;
+
+                if (selectedRowIndex >= 0)
+                {
+                    int categoryId = Convert.ToInt32(dataGridView2.Rows[selectedRowIndex].Cells["CategoryID"].Value);
+
+                    categoriesDatos.UpdateCategory(categoryId, txtxNombre.Text, Txtdescripcion.Text, null);
+                    limpiar();
+                    dataGridView2.DataSource = categoriesDatos.LoadCategories();
+                    MessageBox.Show("Categoria actualizada correctamente");
 
 
-            // categoriesData.UpdateCategory(categoryId, txtxNombre.Text, Txtdescripcion.Text, null);
-            categoriesDatos.UpdateCategory(categoryId, txtxNombre.Text, Txtdescripcion.Text, null);
-            var categoriesDataTable = categoriesDatos.LoadCategories();
-
-
-            dataGridView2.DataSource = categoriesDataTable;
-            dataGridView2.Columns["CategoryID"].HeaderText = "ID de Categoría";
-            dataGridView2.Columns["CategoryName"].HeaderText = "Nombre de Categoría";
-            dataGridView2.Columns["Description"].HeaderText = "Descripción";
-            dataGridView2.Columns["Picture"].HeaderText = "Imagen";
+                }
+            }
+            else
+            {
+                MessageBox.Show("Por favor, seleccione una categoría antes de intentar actualizarla.", "Selección requerida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
 
 
         }
@@ -106,35 +107,52 @@ namespace CRUDDapper
             if (ValidatorResult.IsValid)
             {
                 categoriesDatos.InsertCategory(txtxNombre.Text, Txtdescripcion.Text, null);
-                //categoriesData.InsertCategory(txtxNombre.Text, Txtdescripcion.Text, null);
+                MessageBox.Show("Categoria agregada  correctamente");
+                limpiar();
+                dataGridView2.DataSource = categoriesDatos.LoadCategories();
 
-                var categoriesDataTable = categoriesDatos.LoadCategories();
 
-
-                dataGridView2.DataSource = categoriesDataTable;
-                dataGridView2.Columns["CategoryID"].HeaderText = "ID de Categoría";
-                dataGridView2.Columns["CategoryName"].HeaderText = "Nombre de Categoría";
-                dataGridView2.Columns["Description"].HeaderText = "Descripción";
-                dataGridView2.Columns["Picture"].HeaderText = "Imagen";
 
             }
             else
             {
                 var message = string.Join("\n", ValidatorResult.Errors.Select(a => a.ErrorMessage));
                 MessageBox.Show(message, "Validation Error ", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            } 
+            }
 
         }
 
         private void CategoryForm_Load(object sender, EventArgs e)
         {
-
-            //  usercategoriaBindingSource.Add(_usercategoria1);
+            dataGridView2.DataSource = categoriesDatos.LoadCategories();
             userCategoriaBindingSource.Add(_usercategoria);
+            txtxNombre.Focus();
 
         }
 
-     
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            DialogResult resultado = MessageBox.Show("¿Está seguro de que desea salir?", "Confirmar salida", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+
+            if (resultado == DialogResult.Yes)
+            {
+
+                Application.Exit();
+            }
+        }
+        public void limpiar()
+        {
+            txtxNombre.Text = " ";
+            txtxNombre.Focus();
+            Txtdescripcion.Text = " ";
+        }
+
+        private void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 
 
